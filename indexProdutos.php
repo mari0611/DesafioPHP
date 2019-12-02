@@ -1,46 +1,30 @@
 <?php
 
 if ($_POST) {
-
 if ($_FILES['foto']['error'] == 0) {
     $nomeFoto = $_FILES['foto']['name'];
     $caminhoTmp = $_FILES['foto']['tmp_name'];
-
     move_uploaded_file(
         $caminhoTmp, 
         './assets/img/' . $nomeFoto
     );
-
 }
 
-}
+    $produtosJson = file_get_contents('./includes/produtos.json');
+    $arrayProdutos = json_decode($produtosJson, true);
+    $novoProduto = [
+        'nome' => $_POST['nome'],			
+        'descricao' => $_POST['descricao'],			
+        'preco' => $_POST['preco'],			
+        'foto' => $nomeFoto	
+    ];
 
-if ($_POST) {
-
-$produtosJson = file_get_contents('./includes/produtos.json');
-
-$arrayProdutos = json_decode($produtosJson, true);
-
-
-$novoProduto = [
-    'nome' => $_POST['nome'],			
-    'descricao' => $_POST['descricao'],			
-    'preco' => $_POST['preco'],			
-    'foto' => $nomeFoto	
-];
-
-
-$arrayProdutos[] = $novoProduto;
-
-$novosProdutos = json_encode($arrayProdutos);
-
-$salvou = file_put_contents('./includes/produtos.json', $novosProdutos);
-
-}
-
-
-
+    $arrayProdutos[] = $novoProduto;
+    $novosProdutos = json_encode($arrayProdutos);
+    $salvou = file_put_contents('./includes/produtos.json', $novosProdutos);
+    }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -59,22 +43,24 @@ $salvou = file_put_contents('./includes/produtos.json', $novosProdutos);
 <table>
        <thead>
            <tr>
+           
                <td>Nome</td>
                <td>descrição</td>
                <td>Preço</td>
-               <td> Ações</td>
+               <td>Ações</td>
                
            </tr>
        </thead>
        <tbody>
 
-           <?php foreach ($arrayProdutos as $usuario) : ?>
+           <?php foreach ($arrayProdutos as $produtos) : ?>
                
                    <tr>
                    
-                   <td ><?= $usuario['nome'] ?> </td>
-                   <td><?= $usuario['descricao'] ?> </td>
-                   <td><?= $usuario['preco'] ?> </td>
+                   
+                   <td ><?= $produtos['nome'] ?> </td>
+                   <td><?= $produtos['descricao'] ?> </td>
+                   <td><?= $produtos['preco'] ?> </td>
                    <td> 
                    <a style="width:120px; text-align: center" href="editProduto.php" class="btn btn-info w-20">Editar</a> 
                    <a style="width:120px; text-align: center" href="showProduto.php" class="btn btn-danger w-20">Excluir</a> 

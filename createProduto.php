@@ -1,54 +1,38 @@
 
-<?php
+<?php 
 
-$erro_nome = false;
-$erro_descricao = false;
-$erro_preco = false;
-$erro_foto = false;
+include('./includes/dbc.php');
 
-
-
-
-
-if($_POST) {
-
-    if (!is_numeric($_POST['preco'])) {
-            
-        $erro_preco = 'O campo deve ser numérico';
+if ($_POST) {
+    $nome = $_POST['nome'];
+    $descrição = $_POST['descricao'];
+    $preço = $_POST['preco'];
     
+   
+
+    $conexao = mysql_connect($dbc);
+
+    $banco = mysql_select_db($dbname,$conexao);
+    
+    $query = "INSERT INTO produtos (nome, descrição, preço) VALUES ('$nome','$descrição', '$preço')";
+    $insert = mysql_query($query,$conexao);
+    
+    if($insert){
+    echo"Produto cadastrado com sucesso!";
+    }else{
+    echo"Não foi possível cadastrar esse produto";
     }
-    
-    if($_POST['nome']) {
-        $erro_nome = false;
-    } else {
-        $erro_nome = true;
-    }
-    
-    if($_FILES['foto']['name']) {
-        $erro_foto = false;
-    } else {
-        $erro_foto = true;
-    }
-    
-    
-    
-        $novoProduto = [
-            'nome' => $_POST['nome'],
-            'descricao' => $_POST['descricao'],
-            'preco' => $_POST['preco'],
-            'foto' => $_FILES['foto'],
-        ];
-    
-        $produtoCadastrado[] = $novoProduto;
-    
-        $cadastroFinal = json_encode($produtoCadastrado);
-    
-        file_put_contents('./includes/produtos.json', $cadastroFinal);
-    
+
 }
+        
 
+
+    
+
+
+
+  
 ?>
-
 
 
 <!DOCTYPE html>
@@ -66,24 +50,21 @@ if($_POST) {
     <div class="container form-group" >
 
     <form action="indexProdutos.php" method="POST" enctype="multipart/form-data">
-    Nome do produto: <input type="text" name="nome"> <br>
-    <?php if($erro_nome) : ?>
-       <div class="alert alert-danger mt-2">Informe o nome do produto</div>
-       <?php endif ?>
+    Nome do produto: <input type="text" name="nome" class="form-control <?php if (!$ok_nome) {echo ('is-invalid');}?>"
+               placeholder="Nome">
+               
+       </div>
 
-    Descrição: <textarea name="descricao" id="" cols="20" rows="5"></textarea> <br>
-    Preço: <input type="text" name="preco" placeholder="R$" required> <br>
+    <div class="container form-group" >
 
-    <?php if($erro_preco) : ?>
-       <div class="alert alert-danger mt-2">O campo deve ser numérico</div>
-       <?php endif ?> <br>
+        Descrição: <textarea name="descricao" id="" cols="20" rows="5"></textarea> <br>
+        Preço: <input type="text" name="preco" placeholder="R$" required> <br>
 
-    Envie a foto do produto: <input type="file" name="foto">
+        
 
-    <?php if($erro_foto) : ?>
-       <div class="alert alert-danger mt-2">A foto é obrigatória</div>
-       <?php endif ?> <br>
+        Envie a foto do produto: <input type="file" name="foto">
 
+        
 
     <button type="submit" class="btn btn-primary w-25 mt-3">CADASTRAR</button>
 
